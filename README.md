@@ -1,3 +1,22 @@
+> **Fork Notice — SeoJaeWan/skills**
+>
+> [anthropics/skills](https://github.com/anthropics/skills)의 개인 fork입니다.
+>
+> **목적:** Windows 환경(cp949 등 비UTF-8 로케일)에서 발생하는 `UnicodeDecodeError`를 수정하기 위한 커스텀 fork.
+>
+> **수정 범위:**
+> - `skills/skill-creator/eval-viewer/generate_review.py` — 파일 I/O에 `encoding="utf-8"` 명시 (9개 지점)
+> - `skills/skill-creator/scripts/aggregate_benchmark.py` — 파일 I/O에 `encoding="utf-8"` 명시 (5개 지점)
+>
+> **사용 방법:** Claude Code에서 이 fork를 플러그인 마켓플레이스로 등록하여 사용합니다.
+> ```
+> /plugin marketplace add SeoJaeWan/skills
+> ```
+>
+> 상세 내용은 [skill-creator-windows-encoding-fix.md](./docs/skill-creator-windows-encoding-fix.md)를 참고하세요.
+
+---
+
 > **Note:** This repository contains Anthropic's implementation of skills for Claude. For information about the Agent Skills standard, see [agentskills.io](http://agentskills.io).
 
 # Skills
