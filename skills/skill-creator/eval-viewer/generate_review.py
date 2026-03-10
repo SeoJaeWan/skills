@@ -82,22 +82,33 @@ def _find_runs_recursive(root: Path, current: Path, runs: list[dict]) -> None:
             _find_runs_recursive(root, child, runs)
 
 
+def _find_ancestor_file(filename: str, run_dir: Path, root: Path) -> Path | None:
+    """Walk from run_dir up to root looking for filename. Return the first match."""
+    current = run_dir
+    while True:
+        candidate = current / filename
+        if candidate.exists():
+            return candidate
+        if current == root:
+            break
+        current = current.parent
+    return None
+
+
 def build_run(root: Path, run_dir: Path) -> dict | None:
     """Build a run dict with prompt, outputs, and grading data."""
     prompt = ""
     eval_id = None
 
-    # Try eval_metadata.json
-    for candidate in [run_dir / "eval_metadata.json", run_dir.parent / "eval_metadata.json"]:
-        if candidate.exists():
-            try:
-                metadata = json.loads(candidate.read_text(encoding="utf-8"))
-                prompt = metadata.get("prompt", "")
-                eval_id = metadata.get("eval_id")
-            except (json.JSONDecodeError, OSError):
-                pass
-            if prompt:
-                break
+    # Try eval_metadata.json — walk up from run_dir to root
+    metadata_path = _find_ancestor_file("eval_metadata.json", run_dir, root)
+    if metadata_path:
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            prompt = metadata.get("prompt", "")
+            eval_id = metadata.get("eval_id")
+        except (json.JSONDecodeError, OSError):
+            pass
 
     # Fall back to transcript.md
     if not prompt:
@@ -126,16 +137,14 @@ def build_run(root: Path, run_dir: Path) -> dict | None:
             if f.is_file() and f.name not in METADATA_FILES:
                 output_files.append(embed_file(f))
 
-    # Load grading if present
+    # Load grading if present — walk up from run_dir to root
     grading = None
-    for candidate in [run_dir / "grading.json", run_dir.parent / "grading.json"]:
-        if candidate.exists():
-            try:
-                grading = json.loads(candidate.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):
-                pass
-            if grading:
-                break
+    grading_path = _find_ancestor_file("grading.json", run_dir, root)
+    if grading_path:
+        try:
+            grading = json.loads(grading_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            pass
 
     return {
         "id": run_id,
@@ -153,7 +162,7 @@ def embed_file(path: Path) -> dict:
 
     if ext in TEXT_EXTENSIONS:
         try:
-            content = path.read_text(errors="replace")
+            content = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             content = "(Error reading file)"
         return {

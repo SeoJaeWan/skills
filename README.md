@@ -1,6 +1,28 @@
 > **Fork Notice — SeoJaeWan/skills**
 >
 > [anthropics/skills](https://github.com/anthropics/skills)의 개인 fork입니다.
+
+> **한글 UI 적용 및 eval 탐색 버그 수정**
+>
+> **목적:** skill-creator 뷰어를 한글 기반으로 전환하고, 스크립트 전반의 UTF-8 인코딩 누락 수정 및 `eval_metadata.json`/`grading.json` 탐색 버그를 해결.
+>
+> **수정 범위:**
+>
+> *한글 UI 적용*
+> - `skills/skill-creator/eval-viewer/viewer.html` — 뷰어 UI 텍스트 전체 한글화 (헤더, 탭, 버튼, 피드백, 벤치마크 등)
+>
+> *UTF-8 인코딩 수정 (스크립트 전반)*
+> - `skills/skill-creator/scripts/generate_report.py` — 파일 I/O에 `encoding="utf-8"` 명시
+> - `skills/skill-creator/scripts/improve_description.py` — 파일 I/O에 `encoding="utf-8"` 명시
+> - `skills/skill-creator/scripts/quick_validate.py` — 파일 I/O에 `encoding="utf-8"` 명시
+> - `skills/skill-creator/scripts/run_eval.py` — 파일 I/O에 `encoding="utf-8"` 명시
+> - `skills/skill-creator/scripts/run_loop.py` — 파일 I/O에 `encoding="utf-8"` 명시
+> - `skills/skill-creator/scripts/utils.py` — 파일 I/O에 `encoding="utf-8"` 명시
+>
+> *eval_metadata.json / grading.json 탐색 버그 수정*
+> - `skills/skill-creator/eval-viewer/generate_review.py` — `build_run()`의 파일 탐색을 고정 depth(parent)에서 `run_dir` → `root` 상위 순회 방식(`_find_ancestor_file`)으로 변경. 디렉토리가 2단계 이상 중첩될 때(예: `eval-1/with_skill/run-1/outputs/`) `eval_metadata.json`과 `grading.json`을 찾지 못하던 문제 해결.
+
+> **Windows UTF-8 인코딩 수정**
 >
 > **목적:** Windows 환경(cp949 등 비UTF-8 로케일)에서 발생하는 `UnicodeDecodeError`를 수정하기 위한 커스텀 fork.
 >
