@@ -307,7 +307,7 @@ def main():
     )
 
     # Save JSON output
-    json_output = json.dumps(output, indent=2)
+    json_output = json.dumps(output, indent=2, ensure_ascii=False)
     print(json_output)
     if results_dir:
         (results_dir / "results.json").write_text(json_output, encoding="utf-8")
