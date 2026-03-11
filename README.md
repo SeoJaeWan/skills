@@ -2,6 +2,15 @@
 >
 > [anthropics/skills](https://github.com/anthropics/skills)의 개인 fork입니다.
 
+> **eval 뷰어 `</script>` 이스케이프 수정**
+>
+> **목적:** eval 출력에 `</script>` 문자열이 포함될 경우(예: JSON-LD 수정 가이드), 브라우저 HTML 파서가 메인 `<script>` 블록을 조기 종료시켜 리포트가 깨지는 문제 수정.
+>
+> **원인:** `generate_review.py`에서 `json.dumps` 결과를 `<script>` 블록 안에 직접 삽입하는데, JSON 값 내부의 `</script>` 문자열을 HTML 파서가 script 종료 태그로 인식.
+>
+> **수정 범위:**
+> - `skills/skill-creator/eval-viewer/generate_review.py` — JSON 임베딩 전 `</script>` → `<\/script>` 이스케이프 추가
+
 > **한글 UI 적용 및 eval 탐색 버그 수정**
 >
 > **목적:** skill-creator 뷰어를 한글 기반으로 전환하고, 스크립트 전반의 UTF-8 인코딩 누락 수정 및 `eval_metadata.json`/`grading.json` 탐색 버그를 해결.
